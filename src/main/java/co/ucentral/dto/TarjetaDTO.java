@@ -13,6 +13,9 @@ public class TarjetaDTO {
         this.cupoDisponible = cupoDisponible;
     }
 
+    public TarjetaDTO(String numeroTarjeta, double cupoDisponible) {
+    }
+
     public String getNumeroTarjeta() {
         return numeroTarjeta;
     }

@@ -4,45 +4,76 @@ import co.ucentral.dto.MovimientoDTO;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
 
 public class MovimientoDAO {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public List<MovimientoDTO> obtenerMovimientos(String numeroTarjeta, String identificacionCliente) {
+    public List<MovimientoDTO> obtenerMovimientos(String numeroTarjeta, String identificacionCliente, String fechaDesde, String fechaHasta) {
         List<MovimientoDTO> movimientos = new ArrayList<>();
+
+        // Primero, verificar que la tarjeta pertenece al cliente
+        String validarClienteQuery = "SELECT COUNT(*) FROM tarjeta WHERE numero_tarjeta = ? AND cliente_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement validarStmt = conn.prepareStatement(validarClienteQuery)) {
+
+            validarStmt.setString(1, numeroTarjeta);
+            validarStmt.setString(2, identificacionCliente);
+            ResultSet rsValidacion = validarStmt.executeQuery();
+
+            if (!rsValidacion.next() || rsValidacion.getInt(1) == 0) {
+                System.out.println("Error: La tarjeta no pertenece al cliente.");
+                return movimientos; // Retorna lista vacía si no hay coincidencia
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return movimientos;
+        }
+
+        // Si la tarjeta pertenece al cliente, proceder con la consulta de movimientos
         String query = "SELECT m.* FROM movimiento m " +
                 "JOIN tarjeta t ON m.numero_tarjeta = t.numero_tarjeta " +
                 "WHERE m.numero_tarjeta = ? AND t.cliente_id = ? " +
+                "AND m.fecha BETWEEN ? AND ? " +
                 "ORDER BY m.fecha DESC";
+
+        // Si no se ingresan fechas, usar el último mes automáticamente
+        if (fechaDesde == null || fechaDesde.isEmpty()) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, -1);  // Un mes hacia atrás
+            fechaDesde = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
+        }
+        if (fechaHasta == null || fechaHasta.isEmpty()) {
+            fechaHasta = new SimpleDateFormat("yyyy-MM-dd").format(new Date()); // Fecha actual
+        }
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, numeroTarjeta);
             stmt.setString(2, identificacionCliente);
+            stmt.setString(3, fechaDesde);
+            stmt.setString(4, fechaHasta);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                // Convertir la fecha al formato ISO 8601
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date fechaDate = inputFormat.parse(rs.getString("fecha"));
-                String fechaFormateada = dateFormat.format(fechaDate);
-
                 movimientos.add(new MovimientoDTO(
                         rs.getString("numero_tarjeta"),
-                        fechaFormateada,  // Fecha en formato ISO
+                        rs.getString("fecha"),
                         rs.getDouble("valor"),
                         rs.getString("tipo_movimiento"),
                         rs.getString("establecimiento"),
                         rs.getString("terminal")
                 ));
             }
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return movimientos;
     }
+
+
 }

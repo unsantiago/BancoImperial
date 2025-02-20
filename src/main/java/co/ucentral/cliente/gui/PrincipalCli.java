@@ -21,7 +21,9 @@ public class PrincipalCli extends javax.swing.JFrame {
     private final Gson gson;
 
     private JTextField numeroTarjetaTxt;
-    private JTextField identificacionTxt;  // Nuevo campo para la identificación
+    private JTextField identificacionTxt;
+    private JTextField fechaDesdeTxt;
+    private JTextField fechaHastaTxt;
     private JTextArea mensajesTxt;
     private JButton btConsultarMovimientos;
     private JButton btConsultarCupo;
@@ -59,7 +61,7 @@ public class PrincipalCli extends javax.swing.JFrame {
         mensajesTxt.setEnabled(false);
         JScrollPane jScrollPane1 = new JScrollPane(mensajesTxt);
         getContentPane().add(jScrollPane1);
-        jScrollPane1.setBounds(20, 250, 400, 100);
+        jScrollPane1.setBounds(20, 300, 400, 120);
 
         JLabel jLabel2 = new JLabel("Número de Tarjeta:");
         jLabel2.setFont(new java.awt.Font("Verdana", 0, 14));
@@ -79,6 +81,24 @@ public class PrincipalCli extends javax.swing.JFrame {
         getContentPane().add(identificacionTxt);
         identificacionTxt.setBounds(20, 140, 200, 30);
 
+        JLabel jLabel4 = new JLabel("Fecha Desde (YYYY-MM-DD):");
+        jLabel4.setFont(new java.awt.Font("Verdana", 0, 14));
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(20, 180, 200, 20);
+
+        fechaDesdeTxt = new JTextField();
+        getContentPane().add(fechaDesdeTxt);
+        fechaDesdeTxt.setBounds(20, 200, 200, 30);
+
+        JLabel jLabel5 = new JLabel("Fecha Hasta (YYYY-MM-DD):");
+        jLabel5.setFont(new java.awt.Font("Verdana", 0, 14));
+        getContentPane().add(jLabel5);
+        jLabel5.setBounds(240, 180, 200, 20);
+
+        fechaHastaTxt = new JTextField();
+        getContentPane().add(fechaHastaTxt);
+        fechaHastaTxt.setBounds(240, 200, 200, 30);
+
         btConsultarMovimientos = new JButton("Consultar Movimientos");
         btConsultarMovimientos.setFont(new java.awt.Font("Verdana", 0, 14));
         btConsultarMovimientos.addActionListener(evt -> consultarMovimientos());
@@ -91,7 +111,7 @@ public class PrincipalCli extends javax.swing.JFrame {
         getContentPane().add(btConsultarCupo);
         btConsultarCupo.setBounds(240, 140, 180, 30);
 
-        setSize(new java.awt.Dimension(450, 400));
+        setSize(new java.awt.Dimension(500, 450));
         setLocationRelativeTo(null);
     }
 
@@ -122,16 +142,17 @@ public class PrincipalCli extends javax.swing.JFrame {
 
         String numeroTarjeta = numeroTarjetaTxt.getText().trim();
         String identificacionCliente = identificacionTxt.getText().trim();
+        String fechaDesde = fechaDesdeTxt.getText().trim();
+        String fechaHasta = fechaHastaTxt.getText().trim();
 
         if (numeroTarjeta.isEmpty() || identificacionCliente.isEmpty()) {
             mensajesTxt.append("Ingrese número de tarjeta e identificación.\n");
             return;
         }
 
-        RequestDTO request = new RequestDTO("CONSULTA_MOVIMIENTOS", identificacionCliente, numeroTarjeta, null, null);
+        RequestDTO request = new RequestDTO("CONSULTA_MOVIMIENTOS", identificacionCliente, numeroTarjeta, fechaDesde, fechaHasta);
         enviarSolicitud(request);
     }
-
     private void consultarCupoDisponible() {
         if (!servidorActivo) {
             mensajesTxt.append("Debe conectarse al servidor primero.\n");

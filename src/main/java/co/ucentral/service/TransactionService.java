@@ -24,14 +24,15 @@ public class TransactionService {
      * @param numeroTarjeta Número de la tarjeta.
      * @return ResponseDTO con la lista de movimientos o un mensaje de error.
      */
-    public ResponseDTO consultarMovimientos(String numeroTarjeta, String identificacionCliente) {
-        List<MovimientoDTO> movimientos = movimientoDAO.obtenerMovimientos(numeroTarjeta, identificacionCliente);
+    public ResponseDTO consultarMovimientos(String numeroTarjeta, String identificacionCliente, String fechaDesde, String fechaHasta) {
+        List<MovimientoDTO> movimientos = movimientoDAO.obtenerMovimientos(numeroTarjeta, identificacionCliente, fechaDesde, fechaHasta);
         if (movimientos != null && !movimientos.isEmpty()) {
             return new ResponseDTO("OK", "Consulta exitosa", 0, movimientos);
         } else {
-            return new ResponseDTO("ERROR", "No se encontraron movimientos para la tarjeta y cliente especificado.", 0, null);
+            return new ResponseDTO("ERROR", "No se encontraron movimientos en el rango de fechas especificado.", 0, null);
         }
     }
+
 
 
     /**
@@ -41,12 +42,14 @@ public class TransactionService {
      * @return ResponseDTO con el cupo disponible o un mensaje de error.
      */
     public ResponseDTO consultarCupoDisponible(String numeroTarjeta) {
-        TarjetaDTO tarjeta = tarjetaDAO.obtenerCupoDisponible(numeroTarjeta);
-        if (tarjeta != null) {
-            return new ResponseDTO("OK", "Cupo disponible consultado exitosamente", tarjeta.getCupoDisponible(), null);
+        double cupoDisponible = tarjetaDAO.obtenerCupoDisponible(numeroTarjeta);
+        if (cupoDisponible >= 0) {
+            return new ResponseDTO("OK", "Cupo disponible consultado exitosamente", cupoDisponible, null);
         } else {
             return new ResponseDTO("ERROR", "Tarjeta no encontrada.", 0, null);
         }
     }
+
+
 }
 

@@ -47,7 +47,9 @@ public class ClientHandler extends Thread {
                     case "CONSULTA_MOVIMIENTOS":
                         response = transactionService.consultarMovimientos(
                                 request.getNumeroTarjeta(),
-                                request.getIdentificacionCliente()
+                                request.getIdentificacionCliente(),
+                                request.getFechaDesde(),
+                                request.getFechaHasta()
                         );
                         break;
                     case "CONSULTA_CUPO":
