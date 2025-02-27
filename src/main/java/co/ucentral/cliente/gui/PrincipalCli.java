@@ -51,7 +51,7 @@ public class PrincipalCli extends javax.swing.JFrame {
 
         JLabel jLabel1 = new JLabel("Cliente Banco Imperial");
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14));
-        jLabel1.setForeground(new java.awt.Color(204, 0, 0));
+        jLabel1.setForeground(new java.awt.Color(50, 50, 130));
         getContentPane().add(jLabel1);
         jLabel1.setBounds(160, 20, 200, 17);
 
