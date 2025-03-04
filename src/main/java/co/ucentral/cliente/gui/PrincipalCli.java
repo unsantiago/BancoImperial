@@ -115,7 +115,7 @@ public class PrincipalCli extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
-    private void conectar() {
+    /*private void conectar() {
         try {
             if (socket == null || socket.isClosed()) {
                 socket = new Socket("localhost", PORT);
@@ -132,7 +132,69 @@ public class PrincipalCli extends javax.swing.JFrame {
             mensajesTxt.append("No se pudo conectar con el servidor.\n");
             servidorActivo = false;
         }
+    }*/
+    private void conectar() {
+        bConectar.setEnabled(false); // Deshabilita el botón mientras intenta conectar
+
+        SwingWorker<Void, String> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                int intentos = 0;
+                int maxIntentos = 3; // Número máximo de intentos
+                int tiempoEspera = 5000; // 5 segundos entre intentos
+
+                while (intentos < maxIntentos) {
+                    try {
+                        publish("Intentando conectar con el servidor... (Intento " + (intentos + 1) + ")");
+                        socket = new Socket("localhost", PORT);
+                        out = new PrintWriter(socket.getOutputStream(), true);
+                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        servidorActivo = true;
+
+                        publish("✅ Conectado al servidor.");
+                        return null; // Sale del bucle si la conexión fue exitosa
+                    } catch (IOException e) {
+                        publish("⚠️ Fallo en la conexión al servidor. Reintentando...");
+                    }
+
+                    intentos++;
+
+                    if (intentos < maxIntentos) {
+                        try {
+                            Thread.sleep(tiempoEspera); // Espera antes de reintentar
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+
+                publish("❌ No se pudo conectar con el servidor después de " + maxIntentos + " intentos.");
+                servidorActivo = false;
+                return null;
+            }
+
+            @Override
+            protected void process(java.util.List<String> mensajes) {
+                for (String mensaje : mensajes) {
+                    mensajesTxt.append(mensaje + "\n"); // Muestra los mensajes en la interfaz
+                }
+            }
+
+            @Override
+            protected void done() {
+                if (!servidorActivo) {
+                    bConectar.setEnabled(true); // Reactiva el botón si no conectó
+                } else {
+                    btConsultarMovimientos.setEnabled(true);
+                    btConsultarCupo.setEnabled(true);
+                }
+            }
+        };
+
+        worker.execute(); // Inicia el proceso en un hilo separado
     }
+
+
 
     private void consultarMovimientos() {
         if (!servidorActivo) {

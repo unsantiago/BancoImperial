@@ -13,7 +13,7 @@ public class ServidorMonitor {
     private static final int SERVER_PORT = 12345;
     private static Process servidorProceso = null;
 
-    @Scheduled(fixedRate = 10000) // Ejecuta cada 10 segundos
+    @Scheduled(fixedRate = 15000) // Ejecuta cada 15 segundos
     public void verificarServidor() {
         if (!estaServidorActivo()) {
             System.out.println("⚠️ Servidor no está activo. Reiniciando...");
