@@ -46,7 +46,7 @@ public class TarjetaDAO {
     }
 
     public TarjetaDTO obtenerTarjeta(String numeroTarjeta) {
-        String query = "SELECT numero_tarjeta, cliente_id, cupo_total, cupo_disponible FROM tarjeta WHERE numero_tarjeta = ?";
+        String query = "SELECT numero_tarjeta, cliente_id, cupo_total, cupo_disponible, cvv, fecha_vencimiento FROM tarjeta WHERE numero_tarjeta = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -60,10 +60,8 @@ public class TarjetaDAO {
                 tarjeta.setIdentificacionCliente(rs.getString("cliente_id"));
                 tarjeta.setCupoTotal(rs.getDouble("cupo_total"));
                 tarjeta.setCupoDisponible(rs.getDouble("cupo_disponible"));
-
-                System.out.println("Tarjeta encontrada en BD: " + tarjeta.getNumeroTarjeta());
-                System.out.println("Cliente asociado en BD: " + tarjeta.getIdentificacionCliente());
-
+                tarjeta.setCvv(rs.getString("cvv")); // ✅ Corrección aquí
+                tarjeta.setFechaVencimiento(rs.getString("fecha_vencimiento"));
                 return tarjeta;
             }
         } catch (SQLException e) {
@@ -71,9 +69,6 @@ public class TarjetaDAO {
         }
         return null; // Si no se encuentra la tarjeta, devuelve null
     }
-
-
-
 
 
 

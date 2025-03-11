@@ -93,8 +93,18 @@ public class PagoTarjetaGui extends JFrame {
             return;
         }
 
-        // Crear la solicitud de pago
-        RequestDTO request = new RequestDTO("PAGO_TARJETA", identificacion, numeroTarjeta, null, null, monto);
+        // Crear la solicitud de pago con el nuevo RequestDTO
+        RequestDTO request = new RequestDTO(
+                "PAGO_TARJETA",
+                identificacion,
+                numeroTarjeta,
+                null, // No aplica fechaDesde
+                null, // No aplica fechaHasta
+                monto,
+                null, // No aplica CVV
+                null, // No aplica fecha de vencimiento
+                null // No aplica producto
+        );
 
         // Enviar la solicitud al servidor
         try {
@@ -115,4 +125,5 @@ public class PagoTarjetaGui extends JFrame {
             mensajesTxt.setText("❌ Error de conexión con el servidor.");
         }
     }
+
 }

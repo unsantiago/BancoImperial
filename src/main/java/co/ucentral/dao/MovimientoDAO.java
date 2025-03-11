@@ -90,6 +90,26 @@ public class MovimientoDAO {
             e.printStackTrace();
         }
     }
+    public void registrarCompra(String numeroTarjeta, double monto, String producto) {
+        String sql = "INSERT INTO movimiento (numero_tarjeta, fecha, valor, tipo_movimiento, establecimiento, terminal) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, numeroTarjeta);
+            pstmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+            pstmt.setDouble(3, monto);
+            pstmt.setString(4, "COMPRA");
+            pstmt.setString(5, producto); // ✅ Ahora se asigna un valor al establecimiento
+            pstmt.setString(6, "Compra en línea"); // ✅ Se añade un valor predeterminado para terminal
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 

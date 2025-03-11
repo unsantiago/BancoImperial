@@ -63,7 +63,21 @@ public class PrincipalCli extends javax.swing.JFrame {
         });
         getContentPane().add(btPagarTarjeta);
         btPagarTarjeta.setBounds(240, 260, 180, 30);
+// Botón para abrir la ventana de Compra
+        JButton btRealizarCompra = new JButton("Realizar Compra");
+        btRealizarCompra.setFont(new java.awt.Font("Verdana", 0, 14));
+        btRealizarCompra.addActionListener(evt -> {
+            if (!servidorActivo) {
+                mensajesTxt.append("⚠️ Debe conectarse al servidor primero.\n");
+                return;
+            }
 
+            // Pasar la conexión y Gson a la nueva ventana
+            CompraGui compraGui = new CompraGui(socket, out, in, gson);
+            compraGui.setVisible(true);
+        });
+        getContentPane().add(btRealizarCompra);
+        btRealizarCompra.setBounds(240, 300, 180, 30); // Ajuste de posición
 
 
         JLabel jLabel1 = new JLabel("Cliente Banco Imperial");
@@ -223,16 +237,28 @@ public class PrincipalCli extends javax.swing.JFrame {
         String identificacionCliente = identificacionTxt.getText().trim();
         String fechaDesde = fechaDesdeTxt.getText().trim();
         String fechaHasta = fechaHastaTxt.getText().trim();
-        double monto = 0;
 
         if (numeroTarjeta.isEmpty() || identificacionCliente.isEmpty()) {
             mensajesTxt.append("Ingrese número de tarjeta e identificación.\n");
             return;
         }
 
-        RequestDTO request = new RequestDTO("CONSULTA_MOVIMIENTOS", identificacionCliente, numeroTarjeta, fechaDesde, fechaHasta, monto);
+        // Modificación para adaptarse al nuevo constructor de RequestDTO
+        RequestDTO request = new RequestDTO(
+                "CONSULTA_MOVIMIENTOS",
+                identificacionCliente,
+                numeroTarjeta,
+                fechaDesde,
+                fechaHasta,
+                0, // Monto no aplica en la consulta de movimientos
+                null, // CVV no aplica en esta consulta
+                null, // Fecha de vencimiento no aplica
+                null // Producto no aplica
+        );
+
         enviarSolicitud(request);
     }
+
     private void consultarCupoDisponible() {
         if (!servidorActivo) {
             mensajesTxt.append("Debe conectarse al servidor primero.\n");
@@ -245,9 +271,22 @@ public class PrincipalCli extends javax.swing.JFrame {
             return;
         }
 
-        RequestDTO request = new RequestDTO("CONSULTA_CUPO", "", numeroTarjeta, null, null, 0);
+        // Modificación para adaptarse al nuevo constructor de RequestDTO
+        RequestDTO request = new RequestDTO(
+                "CONSULTA_CUPO",
+                "", // No se necesita identificación del cliente para esta consulta
+                numeroTarjeta,
+                null, // No aplica fecha desde
+                null, // No aplica fecha hasta
+                0, // Monto no aplica en la consulta de cupo
+                null, // CVV no aplica
+                null, // Fecha de vencimiento no aplica
+                null // Producto no aplica
+        );
+
         enviarSolicitud(request);
     }
+
 
     private void enviarSolicitud(RequestDTO request) {
         try {
@@ -277,6 +316,11 @@ public class PrincipalCli extends javax.swing.JFrame {
             mensajesTxt.append("Error en la comunicación con el servidor.\n");
         }
     }
+    public Socket getSocket() {
+        return this.socket;
+    }
+
+
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new PrincipalCli().setVisible(true));

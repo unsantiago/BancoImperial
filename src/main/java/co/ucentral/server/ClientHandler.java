@@ -5,6 +5,7 @@ import co.ucentral.dto.RequestDTO;
 import co.ucentral.dto.ResponseDTO;
 import co.ucentral.service.TransactionService;
 import co.ucentral.service.PagoService;
+import co.ucentral.service.CompraService; // ✅ Nueva importación
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,13 +18,15 @@ public class ClientHandler extends Thread {
     private BufferedReader in;
     private PrintWriter out;
     private final TransactionService transactionService;
-    private final PagoService pagoService; // ✅ Se agregó la instancia de PagoService
+    private final PagoService pagoService;
+    private final CompraService compraService; // ✅ Nueva instancia de CompraService
     private final Gson gson;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
         this.transactionService = new TransactionService();
-        this.pagoService = new PagoService(); // ✅ Se inicializa el pagoService
+        this.pagoService = new PagoService();
+        this.compraService = new CompraService(); // ✅ Inicializamos compraService
         this.gson = new Gson();
 
         try {
@@ -59,10 +62,19 @@ public class ClientHandler extends Thread {
                         response = transactionService.consultarCupoDisponible(request.getNumeroTarjeta());
                         break;
                     case "PAGO_TARJETA":
-                        response = pagoService.realizarPago( // ✅ Ahora reconoce `pagoService`
+                        response = pagoService.realizarPago(
                                 request.getNumeroTarjeta(),
                                 request.getIdentificacionCliente(),
-                                request.getMonto()); // ✅ Ahora `getMonto()` existe en RequestDTO
+                                request.getMonto());
+                        break;
+                    case "COMPRA_PRODUCTO": // ✅ Nueva funcionalidad de compra
+                        response = compraService.realizarCompra(
+                                request.getNumeroTarjeta(),
+                                request.getIdentificacionCliente(),
+                                request.getCvv(),
+                                request.getFechaVencimiento(),
+                                request.getMonto(),
+                                request.getProducto());
                         break;
                     default:
                         response = new ResponseDTO("ERROR", "Tipo de solicitud no reconocido.", 0, null);
