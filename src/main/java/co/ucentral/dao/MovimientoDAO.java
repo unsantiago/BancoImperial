@@ -74,6 +74,23 @@ public class MovimientoDAO {
         }
         return movimientos;
     }
+    public void registrarPago(String numeroTarjeta, double monto) {
+        String sql = "INSERT INTO movimiento (numeroTarjeta, fecha, valor, tipoMovimiento) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, numeroTarjeta);
+            pstmt.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+            pstmt.setDouble(3, monto);
+            pstmt.setString(4, "PAGO");
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 }

@@ -2,19 +2,9 @@ package co.ucentral.dto;
 
 public class TarjetaDTO {
     private String numeroTarjeta;
-    private String clienteId;
+    private String identificacionCliente; // Nuevo campo
     private double cupoTotal;
     private double cupoDisponible;
-
-    public TarjetaDTO(String numeroTarjeta, String clienteId, double cupoTotal, double cupoDisponible) {
-        this.numeroTarjeta = numeroTarjeta;
-        this.clienteId = clienteId;
-        this.cupoTotal = cupoTotal;
-        this.cupoDisponible = cupoDisponible;
-    }
-
-    public TarjetaDTO(String numeroTarjeta, double cupoDisponible) {
-    }
 
     public String getNumeroTarjeta() {
         return numeroTarjeta;
@@ -24,12 +14,12 @@ public class TarjetaDTO {
         this.numeroTarjeta = numeroTarjeta;
     }
 
-    public String getClienteId() {
-        return clienteId;
+    public String getIdentificacionCliente() {
+        return identificacionCliente;
     }
 
-    public void setClienteId(String clienteId) {
-        this.clienteId = clienteId;
+    public void setIdentificacionCliente(String identificacionCliente) {
+        this.identificacionCliente = identificacionCliente;
     }
 
     public double getCupoTotal() {
@@ -48,4 +38,5 @@ public class TarjetaDTO {
         this.cupoDisponible = cupoDisponible;
     }
 }
+
 

@@ -49,6 +49,23 @@ public class PrincipalCli extends javax.swing.JFrame {
         getContentPane().add(bConectar);
         bConectar.setBounds(20, 20, 120, 30);
 
+        JButton btPagarTarjeta = new JButton("Pagar Tarjeta");
+        btPagarTarjeta.setFont(new java.awt.Font("Verdana", 0, 14));
+        btPagarTarjeta.addActionListener(evt -> {
+            if (!servidorActivo) {
+                mensajesTxt.append("⚠️ Debe conectarse al servidor primero.\n");
+                return;
+            }
+
+            // Pasar la conexión y Gson a la nueva ventana
+            PagoTarjetaGui pagoGui = new PagoTarjetaGui(out, in, gson);
+            pagoGui.setVisible(true);
+        });
+        getContentPane().add(btPagarTarjeta);
+        btPagarTarjeta.setBounds(240, 260, 180, 30);
+
+
+
         JLabel jLabel1 = new JLabel("Cliente Banco Imperial");
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14));
         jLabel1.setForeground(new java.awt.Color(50, 50, 130));
@@ -206,13 +223,14 @@ public class PrincipalCli extends javax.swing.JFrame {
         String identificacionCliente = identificacionTxt.getText().trim();
         String fechaDesde = fechaDesdeTxt.getText().trim();
         String fechaHasta = fechaHastaTxt.getText().trim();
+        double monto = 0;
 
         if (numeroTarjeta.isEmpty() || identificacionCliente.isEmpty()) {
             mensajesTxt.append("Ingrese número de tarjeta e identificación.\n");
             return;
         }
 
-        RequestDTO request = new RequestDTO("CONSULTA_MOVIMIENTOS", identificacionCliente, numeroTarjeta, fechaDesde, fechaHasta);
+        RequestDTO request = new RequestDTO("CONSULTA_MOVIMIENTOS", identificacionCliente, numeroTarjeta, fechaDesde, fechaHasta, monto);
         enviarSolicitud(request);
     }
     private void consultarCupoDisponible() {
@@ -227,7 +245,7 @@ public class PrincipalCli extends javax.swing.JFrame {
             return;
         }
 
-        RequestDTO request = new RequestDTO("CONSULTA_CUPO", "", numeroTarjeta, null, null);
+        RequestDTO request = new RequestDTO("CONSULTA_CUPO", "", numeroTarjeta, null, null, 0);
         enviarSolicitud(request);
     }
 

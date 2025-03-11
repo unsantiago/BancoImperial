@@ -6,14 +6,18 @@ public class RequestDTO {
     private String numeroTarjeta;
     private String fechaDesde;
     private String fechaHasta;
+    private double monto;
 
-    public RequestDTO(String tipo, String identificacionCliente, String numeroTarjeta, String fechaDesde, String fechaHasta) {
+
+    public RequestDTO(String tipo, String identificacionCliente, String numeroTarjeta, String fechaDesde, String fechaHasta, double monto) {
         this.tipo = tipo;
         this.identificacionCliente = identificacionCliente;
         this.numeroTarjeta = numeroTarjeta;
         this.fechaDesde = fechaDesde;
         this.fechaHasta = fechaHasta;
+        this.monto = monto;
     }
+
 
     public String getTipo() {
         return tipo;
@@ -54,5 +58,13 @@ public class RequestDTO {
     public void setFechaHasta(String fechaHasta) {
         this.fechaHasta = fechaHasta;
     }
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
+
 }
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import co.ucentral.dto.RequestDTO;
 import co.ucentral.dto.ResponseDTO;
 import co.ucentral.service.TransactionService;
+import co.ucentral.service.PagoService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,11 +17,13 @@ public class ClientHandler extends Thread {
     private BufferedReader in;
     private PrintWriter out;
     private final TransactionService transactionService;
+    private final PagoService pagoService; // ✅ Se agregó la instancia de PagoService
     private final Gson gson;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
         this.transactionService = new TransactionService();
+        this.pagoService = new PagoService(); // ✅ Se inicializa el pagoService
         this.gson = new Gson();
 
         try {
@@ -54,6 +57,12 @@ public class ClientHandler extends Thread {
                         break;
                     case "CONSULTA_CUPO":
                         response = transactionService.consultarCupoDisponible(request.getNumeroTarjeta());
+                        break;
+                    case "PAGO_TARJETA":
+                        response = pagoService.realizarPago( // ✅ Ahora reconoce `pagoService`
+                                request.getNumeroTarjeta(),
+                                request.getIdentificacionCliente(),
+                                request.getMonto()); // ✅ Ahora `getMonto()` existe en RequestDTO
                         break;
                     default:
                         response = new ResponseDTO("ERROR", "Tipo de solicitud no reconocido.", 0, null);
